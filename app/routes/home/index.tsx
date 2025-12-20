@@ -8,5 +8,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-    return <section>My App</section>;
+   return <section>My App</section>;
 }
