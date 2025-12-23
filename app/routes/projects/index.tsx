@@ -16,8 +16,23 @@ export function meta({}: Route.MetaArgs) {
 export async function loader(
     {}: Route.LoaderArgs
 ): Promise<{ projects: Project[] }> {
-    const response = await fetch("http://localhost:8000/projects");
-    const data = await response.json();
+    const apiUrl = import.meta.env.VITE_API_URL;
+    if (!apiUrl) {
+        throw new Response("VITE_API_URL is not defined", { status: 500 });
+    }
+
+    let data: Project[] = [];
+    try {
+        const response = await fetch(`${apiUrl}/projects`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch projects: ${response.statusText}`);
+        }
+        data = await response.json();
+    } catch (error) {
+        console.error("Projects loader error:", error);
+        throw new Response("Failed to load projects", { status: 500 });
+    }
+
     return { projects: data };
 }
 
@@ -28,7 +43,6 @@ export default function ProjectsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const projectsPerPage = 10;
 
-    // ✅ Unique categories (no duplicates)
     const categories = [
         "All",
         ...Array.from(
@@ -40,13 +54,11 @@ export default function ProjectsPage() {
         ),
     ];
 
-    // ✅ Filter projects
     const filteredProjects =
         selectedCategory === "All"
             ? projects
             : projects.filter((project) => project.category === selectedCategory);
 
-    // ✅ Pagination based on filtered projects
     const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
     const indexOfLast = currentPage * projectsPerPage;
     const indexOfFirst = indexOfLast - projectsPerPage;
@@ -58,14 +70,13 @@ export default function ProjectsPage() {
                 🚀 Projects
             </h2>
 
-            {/* Category Filter */}
             <div className="flex flex-wrap gap-2 mb-8">
                 {categories.map((category) => (
                     <button
                         key={category}
                         onClick={() => {
                             setSelectedCategory(category);
-                            setCurrentPage(1); // reset page when changing category
+                            setCurrentPage(1);
                         }}
                         className={`px-4 py-1 rounded transition ${
                             selectedCategory === category
@@ -78,7 +89,6 @@ export default function ProjectsPage() {
                 ))}
             </div>
 
-            {/* Projects Grid */}
             <AnimatePresence mode="wait">
                 <motion.div layout className="grid gap-6 sm:grid-cols-2">
                     {currentProjects.map((project) => (
@@ -95,7 +105,6 @@ export default function ProjectsPage() {
                 </motion.div>
             </AnimatePresence>
 
-            {/* Pagination */}
             <Pagination
                 totalPages={totalPages}
                 currentPage={currentPage}

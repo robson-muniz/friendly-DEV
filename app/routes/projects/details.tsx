@@ -1,24 +1,32 @@
-// app/routes/projects/details.tsx
 import type { Route } from "./+types/details";
 import type { Project } from "~/types";
 import { useLoaderData } from "react-router";
 
-// Loader to fetch a single project by ID
 export async function clientLoader({ params }: Route.ClientLoaderArgs): Promise<Project> {
     if (!params.id) {
         throw new Response("Missing project ID", { status: 400 });
     }
 
-    const res = await fetch(`http://localhost:8000/projects/${params.id}`);
-    if (!res.ok) {
-        throw new Response("Project not found", { status: 404 });
+    const apiUrl = import.meta.env.VITE_API_URL;
+    if (!apiUrl) {
+        throw new Response("VITE_API_URL is not defined", { status: 500 });
     }
 
-    const project: Project = await res.json();
+    let project: Project;
+    try {
+        const res = await fetch(`${apiUrl}/projects/${params.id}`);
+        if (!res.ok) {
+            throw new Response("Project not found", { status: 404 });
+        }
+        project = await res.json();
+    } catch (error) {
+        console.error("Project detail loader error:", error);
+        throw new Response("Failed to load project", { status: 500 });
+    }
+
     return project;
 }
 
-// Polished loading UI while the loader runs
 export function HydrateFallback() {
     return (
         <div className="max-w-4xl mx-auto p-6 bg-gray-800 rounded-lg animate-pulse">
@@ -31,9 +39,7 @@ export function HydrateFallback() {
     );
 }
 
-// Main detail page component
 export default function ProjectDetailPage() {
-    // ✅ Use loader hook for data
     const project = useLoaderData<typeof clientLoader>();
 
     return (

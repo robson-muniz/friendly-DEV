@@ -1,4 +1,7 @@
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/index";
+import FeaturedProjects from "~/components/FeaturedProjects";
+import type {Project} from "~/types";
+
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -7,10 +10,29 @@ export function meta({}: Route.MetaArgs) {
     ];
 }
 
-export default function Home() {
-   return (
+export async function loader({ request }: Route.LoaderArgs): Promise<{ projects: Project[] }> {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    if (!apiUrl) {
+        throw new Response("VITE_API_URL is not defined", { status: 500 });
+    }
+
+    const res = await fetch(`${apiUrl}/projects`);
+    if (!res.ok) {
+        throw new Response("Failed to fetch projects", { status: res.status });
+    }
+
+    const data: Project[] = await res.json();
+    return { projects: data };
+}
+
+export default function Home({loaderData}:Route.ComponentProps) {
+    const { projects } = loaderData;
+
+
+    return (
        <>
-           HomePage
+           <FeaturedProjects projects={projects} count={2} />
+
        </>
    )
 }
