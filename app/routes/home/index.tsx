@@ -34,7 +34,6 @@ export default function Home({loaderData}:Route.ComponentProps) {
        <>
            <FeaturedProjects projects={projects} count={2} />
            <AboutPreview />
-
        </>
    )
 }
