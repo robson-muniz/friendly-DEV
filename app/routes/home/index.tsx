@@ -14,7 +14,10 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ request }: Route.LoaderArgs): Promise<{ projects: Project[] }> {
     const apiUrl = import.meta.env.VITE_API_URL;
     if (!apiUrl) {
-        throw new Response("VITE_API_URL is not defined", { status: 500 });
+        throw new Response("VITE_API_URL is not defined in environment variables", { 
+            status: 500,
+            statusText: "Configuration Error"
+        });
     }
 
     const res = await fetch(`${apiUrl}/projects`);

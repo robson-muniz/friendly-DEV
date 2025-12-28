@@ -9,7 +9,10 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs): Promise<
 
     const apiUrl = import.meta.env.VITE_API_URL;
     if (!apiUrl) {
-        throw new Response("VITE_API_URL is not defined", { status: 500 });
+        throw new Response("VITE_API_URL is not defined in environment variables", { 
+            status: 500,
+            statusText: "Configuration Error"
+        });
     }
 
     let project: Project;
