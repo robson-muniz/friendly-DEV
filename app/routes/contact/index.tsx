@@ -1,10 +1,27 @@
-const ContactPage = () => {
+import type { Route } from "./+types"
+import { Form } from "react-router-dom"
+
+export async function action({ request }: Route.ActionArgs) {
+    const name = formdata.get('name')
+    const email = formdata.get('email')
+    const subject = formdata.get('subject')
+    const message = formdata.get('message')
+    const data = {name, email, subject, message}
+
+    return {message: 'Form submitted succedatassfully!', data}
+}
+
+
+const ContactPage = ({actionData}: Route.ComponentProps) => {
     return (
         <div className='max-w-3xl mx-auto mt-12 px-6 py-8 bg-gray-900'>
             <h2 className="text-2xl font bold text-white mb-8 text-center">
                 📪 Contact Me
             </h2>
-            <form className="space-y-6">
+            {actionData?.message ? (<p className="mb-6 p-4 bg-green-700 text-green-100 text-center rounded-lg border border-green-500 shadow-md">
+                {actionData.message}
+            </p>) : null}
+            <Form method="post" className="space-y-6">
                 <div className="">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-300">
                         Full Name
@@ -36,7 +53,7 @@ const ContactPage = () => {
                 <button className="w-full  text-white py-2 rounded-lg bg-blue-600 hover:bg-blue-700 cursor-pointer">
                     Send Message
                 </button>
-            </form>
+            </Form>
         </div>
     );
 };

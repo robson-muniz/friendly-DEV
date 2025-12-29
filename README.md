@@ -21,6 +21,7 @@
 ---
 
 ## 🛠️ Tech Stack
+docs: improve README
 
 <div align="center">
 
@@ -38,7 +39,8 @@
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Starteddocs: improve README
+
 
 ### 📋 Requirements
 
@@ -49,7 +51,7 @@
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/odyniz/friendly-DEV.git
+   git clone https://github.com/robson-muniz/friendly-DEV.git
    cd friendly-DEV
    ```
 

@@ -18,9 +18,12 @@ const AboutPreview = () => {
                     building friendly digital experiences and helping others grow into
                     confident, modern developers.
                 </p>
-                <Link to='/about' className='inline-block text-blue-400 hover:underline
-                 text-sm'>
-                    Learn More About Me!
+                <Link
+                    to='/about'
+                    className='inline-block text-blue-400 hover:underline
+                 text-sm'
+                >
+                Learn More About Me!
                 </Link>
             </div>
 
