@@ -1,18 +1,38 @@
 import type { Route } from "./+types"
-import { Form } from "react-router-dom"
+import { Form } from "react-router"
 
 export async function action({ request }: Route.ActionArgs) {
-    const name = formdata.get('name')
-    const email = formdata.get('email')
-    const subject = formdata.get('subject')
-    const message = formdata.get('message')
+    const formData = await request.formData()
+    const name = formData.get('name') as string
+    const email = formData.get('email') as string
+    const subject = formData.get('subject') as string
+    const message = formData.get('message') as string
     const data = {name, email, subject, message}
 
-    return {message: 'Form submitted succedatassfully!', data}
+    const errors:Record<string, string> = {}
+
+    if (!name) errors.name = 'Name is required';
+
+    if (!email) {
+        errors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        // invalid email
+        errors.email = 'Email is invalid';
+    }
+
+    if (!subject) errors.subject = 'Subject is required';
+    if (!message) errors.message = 'Message is required';
+
+    if (Object.keys(errors).length > 0) {
+        return {errors}
+    }
+
+    return {message: 'Form submitted successfully!', data}
 }
 
+export default function ContactPage({actionData}: Route.ComponentProps) {
+    const errors = actionData?.errors || {};
 
-const ContactPage = ({actionData}: Route.ComponentProps) => {
     return (
         <div className='max-w-3xl mx-auto mt-12 px-6 py-8 bg-gray-900'>
             <h2 className="text-2xl font bold text-white mb-8 text-center">
@@ -29,6 +49,7 @@ const ContactPage = ({actionData}: Route.ComponentProps) => {
                     <input type="text" id='name' name='name'
                            className="w-full m-1 px-4 py-2 border border-gray-700 rounded-lg bg-gray-800 text-gray-100"/>
                 </div>
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                 <div className="">
                     <label htmlFor="email" className="block text-sm font-medium text-gray-300">
                         Email
@@ -36,6 +57,8 @@ const ContactPage = ({actionData}: Route.ComponentProps) => {
                     <input type="email" id='email' name='email'
                            className="w-full m-1 px-4 py-2 border border-gray-700 rounded-lg bg-gray-800 text-gray-100"/>
                 </div>
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+
                 <div className="">
                     <label htmlFor="subject" className="block text-sm font-medium text-gray-300">
                         Subject
@@ -43,6 +66,8 @@ const ContactPage = ({actionData}: Route.ComponentProps) => {
                     <input type="text" id='subject' name='subject'
                            className="w-full m-1 px-4 py-2 border border-gray-700 rounded-lg bg-gray-800 text-gray-100"/>
                 </div>
+                {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject}</p>}
+
                 <div className="">
                     <label htmlFor="message" className="block text-sm font-medium text-gray-300">
                         Message
@@ -50,12 +75,12 @@ const ContactPage = ({actionData}: Route.ComponentProps) => {
                     <textarea id='message' name='message'
                            className="w-full m-1 px-4 py-2 border border-gray-700 rounded-lg bg-gray-800 text-gray-100"/>
                 </div>
+                {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
+
                 <button className="w-full  text-white py-2 rounded-lg bg-blue-600 hover:bg-blue-700 cursor-pointer">
                     Send Message
                 </button>
             </Form>
         </div>
     );
-};
-
-export default ContactPage;
+}

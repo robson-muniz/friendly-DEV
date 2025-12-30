@@ -1,5 +1,5 @@
 import { useLoaderData } from "react-router";
-import type { Route } from "./+types/projects";
+import type { Route } from "./+types/index";
 import type { Project } from "~/types";
 import ProjectCard from "~/components/ProjectCard";
 import Pagination from "~/components/pagination";
