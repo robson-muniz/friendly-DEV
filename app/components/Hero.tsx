@@ -11,7 +11,7 @@ const Hero = ({name = "Developer", text = 'I build friendly web experiences and 
             <h2 className="text-4xl font-bold mb-4">
                 Hey, I'm {name} 👋
             </h2>
-            <p className="text-lg text-gray-300 max-w-2xl mb-6">
+            <p className="text-lg text-gray-300 max-w-2xl mb-6 mx-auto">
                 {text}
             </p>
             <div className="flex justify-center gap-4">
