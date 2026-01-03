@@ -1,9 +1,11 @@
 import type { Route } from "./+types/index";
-import type { PostMeta } from "./+types/index";
+import type { PostMeta } from "~/types";
 import PostCard from "~/components/PostCard";
 import Pagination from "~/components/pagination";
 import { useState } from "react";
 import PostFilter from "~/components/PostFilter";
+import { motion } from "framer-motion";
+import { FaPenFancy } from "react-icons/fa";
 
 
 export async function loader({ request }: Route.LoaderArgs): Promise<{ posts: PostMeta[] }> {
@@ -32,30 +34,53 @@ const BlogPage = ({ loaderData }: Route.ComponentProps) => {
     const currentPosts = filteredPosts.slice(indexOfFirst, indexOfLast);
 
     return (
-        <div className="max-w-3xl mx-auto mt-10 px-6 py-8 bg-gray-900">
-            <h2 className="text-3xl text-white font-bold mb-8">
-                📝 Blog
-            </h2>
+        <div className="flex flex-col min-h-[80vh] relative overflow-hidden">
+            {/* Background Effects */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
 
-            <PostFilter searchQuery={searchQuery} onSearchQueryChange={(query) => {
-                setSearchQuery(query)
-                setCurrentPage(1)
-            }} />
+            <header className="mb-16 text-center relative z-10 pt-12">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <div className="inline-block p-3 bg-blue-500/10 rounded-full mb-4 text-blue-400 text-2xl">
+                        <FaPenFancy />
+                    </div>
+                    <h2 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-300 mb-4 drop-shadow-lg">
+                        The Dev Blog
+                    </h2>
+                    <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                        Thoughts, tutorials, and insights for modern developers.
+                    </p>
+                </motion.div>
+            </header>
 
-            <div className="space-y-8">
-                {currentPosts.length === 0 ? (
-                    <p className="text-gray-400">No posts found</p>
-                ) : (
-                    currentPosts.map((post) => (
-                        <PostCard key={post.slug} post={post} />
-                    ))
+            <div className="max-w-4xl mx-auto w-full">
+                <PostFilter searchQuery={searchQuery} onSearchQueryChange={(query) => {
+                    setSearchQuery(query)
+                    setCurrentPage(1)
+                }} />
+
+                <div className="space-y-6">
+                    {currentPosts.length === 0 ? (
+                        <div className="text-center py-20 text-gray-500 bg-gray-900/30 rounded-2xl border border-gray-800">
+                            <p className="text-xl">No posts found matching "{searchQuery}"</p>
+                        </div>
+                    ) : (
+                        currentPosts.map((post) => (
+                            <PostCard key={post.slug} post={post} />
+                        ))
+                    )}
+                </div>
+
+                {totalPages > 1 && (
+                    <div className="mt-12 flex justify-center">
+                        <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} />
+                    </div>
                 )}
             </div>
-
-            {totalPages > 1 && (
-                <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} />
-            )}
-
         </div>
     );
 };

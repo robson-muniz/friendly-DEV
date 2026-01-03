@@ -24,7 +24,7 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return [
     { title: "The Friendly DEV" },
     { name: "description", content: "Custom Website Developer" },
@@ -40,11 +40,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
-      <Navbar />
-      <main>
-      {children}
-      </main>
+      <body className="flex flex-col min-h-screen relative overflow-x-hidden">
+        {/* Background Gradients */}
+        <div className="fixed inset-0 z-[-1] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-gray-950 to-gray-950 pointer-events-none" />
+
+        <Navbar />
+        <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {children}
+        </main>
         <ScrollRestoration />
         <Scripts />
       </body>
