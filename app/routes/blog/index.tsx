@@ -4,7 +4,7 @@ import PostCard from "~/components/PostCard";
 import Pagination from "~/components/pagination";
 import { useState } from "react";
 import PostFilter from "~/components/PostFilter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaPenFancy } from "react-icons/fa";
 
 
@@ -63,17 +63,34 @@ const BlogPage = ({ loaderData }: Route.ComponentProps) => {
                     setCurrentPage(1)
                 }} />
 
-                <div className="space-y-6">
-                    {currentPosts.length === 0 ? (
-                        <div className="text-center py-20 text-gray-500 bg-gray-900/30 rounded-2xl border border-gray-800">
-                            <p className="text-xl">No posts found matching "{searchQuery}"</p>
-                        </div>
-                    ) : (
-                        currentPosts.map((post) => (
-                            <PostCard key={post.slug} post={post} />
-                        ))
-                    )}
-                </div>
+                <motion.div 
+                    layout
+                    className="space-y-6"
+                >
+                    <AnimatePresence mode="wait">
+                        {currentPosts.length === 0 ? (
+                            <motion.div
+                                key="no-results"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                className="text-center py-20 text-gray-500 bg-gray-900/30 rounded-2xl border border-gray-800"
+                            >
+                                <motion.p
+                                    initial={{ y: 10 }}
+                                    animate={{ y: 0 }}
+                                    className="text-xl"
+                                >
+                                    No posts found matching "{searchQuery}"
+                                </motion.p>
+                            </motion.div>
+                        ) : (
+                            currentPosts.map((post, index) => (
+                                <PostCard key={post.slug} post={post} index={index} />
+                            ))
+                        )}
+                    </AnimatePresence>
+                </motion.div>
 
                 {totalPages > 1 && (
                     <div className="mt-12 flex justify-center">

@@ -1,6 +1,6 @@
 import type { Route } from "./+types"
 import { Form } from "react-router"
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaPaperPlane, FaUser, FaEnvelope, FaTag, FaCommentAlt } from "react-icons/fa";
 
 export async function action({ request }: Route.ActionArgs) {
@@ -74,68 +74,158 @@ export default function ContactPage({ actionData }: Route.ComponentProps) {
                     ) : null}
 
                     <Form method="post" className="space-y-6 relative z-10">
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
+                        <motion.div 
+                            className="grid md:grid-cols-2 gap-6"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            <motion.div 
+                                className="space-y-2"
+                                whileFocus={{ scale: 1.02 }}
+                            >
                                 <label htmlFor="name" className="text-sm font-medium text-gray-300 flex items-center gap-2">
                                     <FaUser className="text-blue-400" /> Full Name
                                 </label>
-                                <input
+                                <motion.input
                                     type="text"
                                     id='name'
                                     name='name'
                                     placeholder="John Doe"
                                     className="w-full px-4 py-3 rounded-xl bg-gray-900/50 border border-gray-700 text-gray-100 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    whileFocus={{ scale: 1.02 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
                                 />
-                                {errors.name && <p className="text-red-400 text-xs mt-1 ml-1">{errors.name}</p>}
-                            </div>
+                                <AnimatePresence>
+                                    {errors.name && (
+                                        <motion.p
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            className="text-red-400 text-xs mt-1 ml-1"
+                                        >
+                                            {errors.name}
+                                        </motion.p>
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
 
-                            <div className="space-y-2">
+                            <motion.div 
+                                className="space-y-2"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.15 }}
+                            >
                                 <label htmlFor="email" className="text-sm font-medium text-gray-300 flex items-center gap-2">
                                     <FaEnvelope className="text-blue-400" /> Email Address
                                 </label>
-                                <input
+                                <motion.input
                                     type="email"
                                     id='email'
                                     name='email'
                                     placeholder="john@example.com"
                                     className="w-full px-4 py-3 rounded-xl bg-gray-900/50 border border-gray-700 text-gray-100 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                    whileFocus={{ scale: 1.02 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
                                 />
-                                {errors.email && <p className="text-red-400 text-xs mt-1 ml-1">{errors.email}</p>}
-                            </div>
-                        </div>
+                                <AnimatePresence>
+                                    {errors.email && (
+                                        <motion.p
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            className="text-red-400 text-xs mt-1 ml-1"
+                                        >
+                                            {errors.email}
+                                        </motion.p>
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
+                        </motion.div>
 
-                        <div className="space-y-2">
+                        <motion.div
+                            className="space-y-2"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
                             <label htmlFor="subject" className="text-sm font-medium text-gray-300 flex items-center gap-2">
                                 <FaTag className="text-blue-400" /> Subject
                             </label>
-                            <input
+                            <motion.input
                                 type="text"
                                 id='subject'
                                 name='subject'
                                 placeholder="Project collaboration..."
                                 className="w-full px-4 py-3 rounded-xl bg-gray-900/50 border border-gray-700 text-gray-100 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                                whileFocus={{ scale: 1.02 }}
+                                transition={{ type: "spring", stiffness: 300 }}
                             />
-                            {errors.subject && <p className="text-red-400 text-xs mt-1 ml-1">{errors.subject}</p>}
-                        </div>
+                            <AnimatePresence>
+                                {errors.subject && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="text-red-400 text-xs mt-1 ml-1"
+                                    >
+                                        {errors.subject}
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
 
-                        <div className="space-y-2">
+                        <motion.div
+                            className="space-y-2"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.25 }}
+                        >
                             <label htmlFor="message" className="text-sm font-medium text-gray-300 flex items-center gap-2">
                                 <FaCommentAlt className="text-blue-400" /> Message
                             </label>
-                            <textarea
+                            <motion.textarea
                                 id='message'
                                 name='message'
                                 rows={5}
                                 placeholder="Tell me about your project..."
                                 className="w-full px-4 py-3 rounded-xl bg-gray-900/50 border border-gray-700 text-gray-100 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all resize-none"
+                                whileFocus={{ scale: 1.02 }}
+                                transition={{ type: "spring", stiffness: 300 }}
                             />
-                            {errors.message && <p className="text-red-400 text-xs mt-1 ml-1">{errors.message}</p>}
-                        </div>
+                            <AnimatePresence>
+                                {errors.message && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="text-red-400 text-xs mt-1 ml-1"
+                                    >
+                                        {errors.message}
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
 
-                        <button className="group w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold text-lg shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-3 cursor-pointer">
-                            <FaPaperPlane className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                            Send Message
-                        </button>
+                        <motion.button
+                            type="submit"
+                            className="group w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold text-lg shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden"
+                            whileHover={{ scale: 1.02, y: -2 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                initial={false}
+                            />
+                            <motion.span
+                                className="relative z-10 flex items-center gap-3"
+                                animate={{ x: [0, 2, 0] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                            >
+                                <FaPaperPlane className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                Send Message
+                            </motion.span>
+                        </motion.button>
                     </Form>
                 </div>
             </motion.div>

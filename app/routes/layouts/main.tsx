@@ -1,9 +1,9 @@
-import {Outlet} from "react-router";
+import { Outlet } from "react-router";
 import type { Route } from '../about/+types'
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
     return [
-        { title: "The Friendly DEV" },
+        { title: "The Robson DEV" },
         { name: "description", content: "Custom Website Developer" },
     ];
 }

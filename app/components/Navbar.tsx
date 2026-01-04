@@ -1,13 +1,14 @@
 import { NavLink } from 'react-router';
 import { FaLaptopCode, FaTimes, FaBars } from "react-icons/fa";
+import { HiSparkles } from "react-icons/hi2";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [hoveredLink, setHoveredLink] = useState<string | null>(null);
 
-    // Detect scroll for styling
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
@@ -26,91 +27,150 @@ const Navbar = () => {
 
     return (
         <nav
-            className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? "glass shadow-lg" : "bg-transparent py-4"
+            className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${scrolled
+                ? "glass backdrop-blur-xl py-4 shadow-2xl shadow-blue-500/5 border-b border-white/5"
+                : "bg-transparent py-6"
                 }`}
         >
-            <div className="max-w-7xl mx-auto px-6 flex justify-between items-center h-16">
-
-                {/* Logo */}
-                <NavLink to='/' className="flex items-center gap-2 group">
-                    <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition duration-300">
-                        <FaLaptopCode className='text-blue-500 text-2xl group-hover:scale-110 transition-transform duration-300' />
-                    </div>
-                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
-                        Friendly<span className="text-gray-100">Dev</span>
-                    </span>
-                </NavLink>
-
-                {/* Desktop Nav */}
-                <div className="hidden md:flex items-center gap-8">
-                    {navLinks.map((link) => (
-                        <NavLink
-                            key={link.path}
-                            to={link.path}
-                            className={({ isActive }) =>
-                                `relative text-sm font-medium transition-colors duration-300 ${isActive ? "text-blue-400" : "text-gray-300 hover:text-white"
-                                }`
-                            }
-                        >
-                            {({ isActive }) => (
-                                <>
-                                    {link.name}
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="navbar-indicator"
-                                            className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-500 rounded-full"
-                                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                                        />
-                                    )}
-                                </>
-                            )}
-                        </NavLink>
-                    ))}
-
-                    {/* CTA Button */}
+            <div className="max-w-7xl mx-auto px-6">
+                <div className="flex justify-between items-center">
+                    {/* Logo */}
                     <NavLink
-                        to="/contact"
-                        className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition shadow-lg shadow-blue-500/25"
+                        to='/'
+                        className="flex items-center gap-3 group relative"
+                        onMouseEnter={() => setHoveredLink('logo')}
+                        onMouseLeave={() => setHoveredLink(null)}
                     >
-                        Hire Me
+                        <motion.div
+                            whileHover={{ rotate: 15, scale: 1.1 }}
+                            className="relative p-2 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-300"
+                        >
+                            <FaLaptopCode className='text-blue-400 text-2xl' />
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                                className="absolute inset-0 border border-blue-500/30 rounded-xl"
+                            />
+                        </motion.div>
+                        <div className="flex flex-col">
+                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
+                                Robson<span className="text-white">Dev</span>
+                            </span>
+                            <span className="text-xs text-gray-400 font-light tracking-widest">PORTFOLIO</span>
+                        </div>
+                        {hoveredLink === 'logo' && (
+                            <motion.div
+                                layoutId="nav-highlight"
+                                className="absolute -inset-2 bg-blue-500/10 rounded-xl -z-10"
+                                transition={{ type: "spring", bounce: 0.2 }}
+                            />
+                        )}
                     </NavLink>
-                </div>
 
-                {/* Mobile Menu Button */}
-                <div className="md:hidden">
-                    <button
-                        onClick={() => setMenuOpen(!menuOpen)}
-                        className="p-2 text-gray-300 hover:text-white transition"
-                        aria-label="Toggle menu"
-                    >
-                        {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-                    </button>
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center gap-1">
+                        {navLinks.map((link) => (
+                            <NavLink
+                                key={link.path}
+                                to={link.path}
+                                onMouseEnter={() => setHoveredLink(link.path)}
+                                onMouseLeave={() => setHoveredLink(null)}
+                                className={({ isActive }) =>
+                                    `relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-lg ${isActive
+                                        ? "text-white"
+                                        : "text-gray-400 hover:text-white"
+                                    }`
+                                }
+                            >
+                                {({ isActive }) => (
+                                    <>
+                                        <span className="relative z-10 flex items-center gap-2">
+                                            {link.name}
+                                            {isActive && <HiSparkles className="text-yellow-400 text-xs" />}
+                                        </span>
+                                        {(isActive || hoveredLink === link.path) && (
+                                            <motion.div
+                                                layoutId="nav-highlight"
+                                                className="absolute inset-0 bg-white/5 rounded-lg -z-10"
+                                                transition={{ type: "spring", bounce: 0.2 }}
+                                            />
+                                        )}
+                                    </>
+                                )}
+                            </NavLink>
+                        ))}
+
+                        {/* CTA Button */}
+                        <NavLink
+                            to="/contact"
+                            className="ml-4 group relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full blur group-hover:blur-md transition-all duration-300"></div>
+                            <div className="relative px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 group-hover:-translate-y-0.5">
+                                <span className="flex items-center gap-2">
+                                    Hire Me
+                                    <motion.span
+                                        animate={{ x: [0, 4, 0] }}
+                                        transition={{ duration: 1.5, repeat: Infinity }}
+                                    >
+                                        →
+                                    </motion.span>
+                                </span>
+                            </div>
+                        </NavLink>
+                    </div>
+
+                    {/* Mobile Menu Button */}
+                    <div className="md:hidden">
+                        <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setMenuOpen(!menuOpen)}
+                            className="p-3 glass rounded-xl border border-white/10 text-gray-300 hover:text-white transition"
+                            aria-label="Toggle menu"
+                        >
+                            {menuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+                        </motion.button>
+                    </div>
                 </div>
             </div>
 
-            {/* Mobile Nav Overlay */}
+            {/* Mobile Navigation */}
             <AnimatePresence>
                 {menuOpen && (
                     <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden glass border-t border-gray-800 overflow-hidden"
+                        className="md:hidden glass backdrop-blur-xl border-t border-white/10 mt-4 overflow-hidden"
                     >
-                        <div className="flex flex-col p-6 space-y-4">
+                        <div className="p-6 space-y-2">
                             {navLinks.map((link) => (
                                 <NavLink
                                     key={link.path}
                                     to={link.path}
                                     onClick={() => setMenuOpen(false)}
                                     className={({ isActive }) =>
-                                        `text-lg font-medium transition ${isActive ? "text-blue-400 pl-4 border-l-2 border-blue-500" : "text-gray-300 hover:text-white pl-4 border-l-2 border-transparent"
+                                        `block px-4 py-3 rounded-xl text-lg font-medium transition-all ${isActive
+                                            ? "bg-white/10 text-white border-l-4 border-blue-500"
+                                            : "text-gray-400 hover:text-white hover:bg-white/5"
                                         }`
                                     }
                                 >
-                                    {link.name}
+                                    {({ isActive }) => (
+                                        <span className="flex items-center gap-3">
+                                            {link.name}
+                                            {isActive && <HiSparkles className="text-yellow-400" />}
+                                        </span>
+                                    )}
                                 </NavLink>
                             ))}
+                            <NavLink
+                                to="/contact"
+                                onClick={() => setMenuOpen(false)}
+                                className="block mt-6 px-4 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold text-center hover:shadow-2xl hover:shadow-blue-500/25 transition-all"
+                            >
+                                Hire Me
+                            </NavLink>
                         </div>
                     </motion.div>
                 )}

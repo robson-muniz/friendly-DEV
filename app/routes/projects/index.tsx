@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 export function meta({ }: Route.MetaArgs) {
     return [
-        { title: "The Friendly DEV | Projects" },
+        { title: "The Robson DEV | Projects" },
         { name: "description", content: "My website project portfolio" },
     ];
 }
@@ -98,8 +98,8 @@ export default function ProjectsPage() {
                             setCurrentPage(1);
                         }}
                         className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${selectedCategory === category
-                                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105"
-                                : "glass text-gray-400 hover:text-white hover:bg-white/5 border border-white/5 hover:border-white/10"
+                            ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105"
+                            : "glass text-gray-400 hover:text-white hover:bg-white/5 border border-white/5 hover:border-white/10"
                             }`}
                     >
                         {category}

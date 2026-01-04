@@ -55,46 +55,119 @@ const AboutPage = () => {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="glass rounded-3xl p-8 md:p-12 relative overflow-hidden"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="glass rounded-3xl p-8 md:p-12 relative overflow-hidden group"
                 >
-                    <div className="absolute top-0 right-0 p-12 opacity-5 text-9xl text-white transform rotate-12">
+                    {/* Animated background decoration */}
+                    <motion.div
+                        className="absolute top-0 right-0 p-12 opacity-5 text-9xl text-white"
+                        animate={{ rotate: [0, 5, -5, 0] }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    >
                         <FaHandshake />
+                    </motion.div>
+                    
+                    {/* Gradient overlay on hover */}
+                    <motion.div
+                        className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        initial={false}
+                    />
+                    
+                    <div className="relative z-10">
+                        <motion.h2
+                            className="text-3xl font-bold text-white mb-6 flex items-center gap-3"
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <motion.span
+                                animate={{ rotate: [0, 10, -10, 0] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                            >
+                                <FaMedal className="text-yellow-400" />
+                            </motion.span>
+                            My Mission
+                        </motion.h2>
+                        <motion.p
+                            className="text-lg text-gray-300 leading-relaxed"
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            After turning my life around, I made it my mission to share what I've learned with others — not just about code, but about building a life you're proud of. Through tutorials, courses, and real-world projects, I aim to make development accessible, friendly, and something you look forward to each day.
+                        </motion.p>
                     </div>
-                    <h2 className="text-3xl font-bold text-white mb-6 relative z-10 flex items-center gap-3">
-                        <FaMedal className="text-yellow-400" /> My Mission
-                    </h2>
-                    <p className="text-lg text-gray-300 leading-relaxed relative z-10">
-                        After turning my life around, I made it my mission to share what I’ve learned with others — not just about code, but about building a life you’re proud of. Through tutorials, courses, and real-world projects, I aim to make development accessible, friendly, and something you look forward to each day.
-                    </p>
                 </motion.div>
             </section>
 
             {/* Tech Stack */}
             <section className="max-w-5xl mx-auto px-6 text-center">
-                <motion.h2
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-3xl font-bold text-white mb-10"
+                    className="mb-12"
                 >
-                    🚀 Technologies & Tools
-                </motion.h2>
+                    <div className="inline-flex items-center gap-2 mb-4">
+                        <span className="text-4xl">🚀</span>
+                        <span className="text-sm font-semibold text-blue-400 uppercase tracking-wider">
+                            Tech Stack
+                        </span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                        Technologies & Tools
+                    </h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">
+                        A curated selection of modern technologies I work with to build amazing digital experiences.
+                    </p>
+                </motion.div>
 
-                <div className="flex flex-wrap justify-center gap-4">
+                <motion.div
+                    className="flex flex-wrap justify-center gap-4"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                >
                     {technologies.map((tech, index) => (
                         <motion.div
                             key={tech}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                            whileInView={{ opacity: 1, scale: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: index * 0.05 }}
-                            whileHover={{ scale: 1.05, y: -5 }}
-                            className="bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 hover:border-blue-500/30 px-6 py-3 rounded-xl text-gray-300 hover:text-white transition-all cursor-default shadow-lg hover:shadow-blue-500/10"
+                            transition={{ 
+                                delay: index * 0.05,
+                                type: "spring",
+                                stiffness: 200,
+                                damping: 20
+                            }}
+                            whileHover={{ 
+                                scale: 1.1, 
+                                y: -8,
+                                rotate: [0, -5, 5, 0]
+                            }}
+                            className="group relative bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 hover:border-blue-500/30 px-6 py-3 rounded-xl text-gray-300 hover:text-white transition-all cursor-default shadow-lg hover:shadow-blue-500/20 overflow-hidden"
                         >
-                            {tech}
+                            {/* Hover gradient effect */}
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                initial={false}
+                            />
+                            <span className="relative z-10 font-medium">{tech}</span>
+                            
+                            {/* Shine effect */}
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100"
+                                initial={{ x: "-100%" }}
+                                whileHover={{ x: "100%" }}
+                                transition={{ duration: 0.6 }}
+                            />
                         </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </section>
         </div>
     );
