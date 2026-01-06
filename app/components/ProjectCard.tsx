@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 const ProjectCard = ({ project }: { project: Project }) => {
     return (
         <Link
-            to={`/projects/${project.id}`}
+            to={`/projects/${project.documentID}`}
             className="group block h-full"
         >
             <motion.div
@@ -51,7 +51,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
                 </div>
 
                 {/* Content */}
-                <div className="p-6 flex flex-col flex-grow relative">
+                <div className="p-6 flex flex-col grow relative">
                     {/* Tech Stack Preview */}
                     <div className="flex flex-wrap gap-2 mb-4">
                         {project.tags?.slice(0, 3).map((tag, index) => (
@@ -68,7 +68,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
                         ))}
                     </div>
 
-                    <div className="flex-grow">
+                    <div className="grow">
                         <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors duration-300 line-clamp-1">
                             {project.title}
                         </h3>

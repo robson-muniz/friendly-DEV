@@ -21,7 +21,7 @@ export function meta({ data }: Route.MetaArgs) {
     ];
 }
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs): Promise<Project> {
+export async function loader({ params }: Route.LoaderArgs) {
     if (!params.id) {
         throw new Response("Missing project ID", { status: 400 });
     }
@@ -49,6 +49,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs): Promise<
 
         return {
             id: projectData.id,
+            documentID: projectData.documentId,
             title: projectData.title,
             description: projectData.description,
             image: projectData.image?.url
@@ -85,7 +86,7 @@ export function HydrateFallback() {
 }
 
 export default function ProjectDetailPage() {
-    const project = useLoaderData<typeof clientLoader>();
+    const project = useLoaderData<typeof loader>();
 
     return (
         <div className="min-h-screen bg-[#0a192f] text-[#e6f1ff]">

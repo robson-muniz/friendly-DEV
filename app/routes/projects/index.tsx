@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router";
 import type { Route } from "./+types/index";
-import type { Project } from "~/types";
+import type {Project, StrapiProject} from "~/types";
 import ProjectCard from "~/components/ProjectCard";
 import Pagination from "~/components/pagination";
 import { useState } from "react";
@@ -40,6 +40,7 @@ export async function loader(
 
     const projects = (json.data || []).map((project: any) => ({
         id: project.id,
+        documentID: project.documentId,
         title: project.title,
         description: project.description,
         image: project.image?.url
