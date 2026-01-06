@@ -12,8 +12,6 @@ type FeaturedProjectsProps = {
 const FeaturedProjects = ({ projects, count = 4 }: FeaturedProjectsProps) => {
     if (!projects) return null;
 
-    const featured = projects.filter((p) => p.featured).slice(0, count);
-
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -88,7 +86,7 @@ const FeaturedProjects = ({ projects, count = 4 }: FeaturedProjectsProps) => {
                     viewport={{ once: true, margin: "-100px" }}
                     className="grid gap-8 md:grid-cols-2"
                 >
-                    {featured.map((p, index) => (
+                    {projects.map((p, index) => (
                         <motion.div
                             key={p.id}
                             variants={itemVariants}

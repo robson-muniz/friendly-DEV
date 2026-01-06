@@ -39,6 +39,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{ projects:
 
     const projects = (projectsJson.data || []).map((project: any) => ({
         id: project.id,
+        documentID: project.documentId,
         title: project.title,
         description: project.description,
         image: project.image?.url
