@@ -5,6 +5,7 @@ import ProjectCard from "~/components/ProjectCard";
 import Pagination from "~/components/pagination";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { image } from "framer-motion/client";
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -25,18 +26,32 @@ export async function loader(
     }
 
     let data: Project[] = [];
+    let json: any;
     try {
-        const response = await fetch(`${apiUrl}/projects`);
+        const response = await fetch(`${apiUrl}/projects?populate=*`);
         if (!response.ok) {
             throw new Error(`Failed to fetch projects: ${response.statusText}`);
         }
-        data = await response.json();
+        json = await response.json();
     } catch (error) {
         console.error("Projects loader error:", error);
         throw new Response("Failed to load projects", { status: 500 });
     }
 
-    return { projects: data };
+    const projects = (json.data || []).map((project: any) => ({
+        id: project.id,
+        title: project.title,
+        description: project.description,
+        image: project.image?.url
+            ? `${import.meta.env.VITE_STRAPI_URL || ""}${project.image.url}`
+            : '/image/no-image.png',
+        url: project.url,
+        category: project.category,
+        featured: project.featured,
+        date: project.date,
+    }));
+
+    return { projects };
 }
 
 export default function ProjectsPage() {

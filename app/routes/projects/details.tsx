@@ -27,19 +27,38 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs): Promise<
     }
 
     const apiUrl = import.meta.env.VITE_API_URL;
+    const strapiUrl = import.meta.env.VITE_STRAPI_URL || "";
     if (!apiUrl) {
         throw new Response("Server configuration error", { status: 500 });
     }
 
     try {
-        const res = await fetch(`${apiUrl}/projects/${params.id}`);
+        const res = await fetch(`${apiUrl}/projects/${params.id}?populate=*`);
         if (!res.ok) {
             if (res.status === 404) {
                 throw new Response("Project not found", { status: 404 });
             }
             throw new Error(`Failed to fetch project: ${res.statusText}`);
         }
-        return await res.json();
+        const json = await res.json();
+        const projectData = json.data;
+
+        if (!projectData) {
+            throw new Response("Project data not found", { status: 404 });
+        }
+
+        return {
+            id: projectData.id,
+            title: projectData.title,
+            description: projectData.description,
+            image: projectData.image?.url
+                ? `${strapiUrl}${projectData.image.url}`
+                : '/image/no-image.png',
+            url: projectData.url,
+            category: projectData.category,
+            featured: projectData.featured,
+            date: projectData.date,
+        };
     } catch (error) {
         if (error instanceof Response) throw error;
         console.error("Project loader error:", error);

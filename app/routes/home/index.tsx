@@ -22,31 +22,40 @@ export function meta({ }: Route.MetaArgs) {
     ];
 }
 
-export async function loader({ request }: Route.LoaderArgs): Promise<{ projects: Project[], posts: PostMeta[] }> {
-    const url = new URL(request.url);
+export async function loader({ request }: Route.LoaderArgs): Promise<{ projects: Project[] }> {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const strapiUrl = import.meta.env.VITE_STRAPI_URL || "";
 
-    const [projectRes, postRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/projects`),
-        fetch(`${import.meta.env.VITE_API_URL}/posts`),
-    ]);
+    const projectRes = await fetch(`${apiUrl}/projects?populate=*`);
 
-    if (!projectRes.ok || !postRes.ok) {
-        throw new Response("Failed to fetch projects or posts", {
+    if (!projectRes.ok) {
+        throw new Response("Failed to fetch projects", {
             status: projectRes.status,
-            statusText: "Failed to fetch projects or posts"
+            statusText: "Failed to fetch projects"
         });
     }
 
-    const [projects, posts] = await Promise.all([
-        projectRes.json(),
-        postRes.json(),
-    ]);
+    const projectsJson = await projectRes.json();
 
-    return { projects, posts };
+    const projects = (projectsJson.data || []).map((project: any) => ({
+        id: project.id,
+        title: project.title,
+        description: project.description,
+        image: project.image?.url
+            ? `${strapiUrl}${project.image.url}`
+            : '/image/no-image.png',
+        url: project.url,
+        category: project.category,
+        featured: project.featured,
+        date: project.date,
+    }));
+
+    return { projects };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-    const { projects, posts } = loaderData;
+    const { projects } = loaderData;
+    const posts: PostMeta[] = []; // Temporary fallback for posts until Strapi posts are ready
 
     const stats = [
         { value: "50+", label: "Projects Delivered", icon: <FaRocket /> },
