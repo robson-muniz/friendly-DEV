@@ -30,46 +30,57 @@ const PostCard = ({ post, index = 0 }: { post: PostMeta; index?: number }) => {
                 initial={false}
             />
 
-            <div className="relative z-10">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
-                    <motion.h3 
-                        className="text-2xl font-bold text-gray-100 group-hover:text-blue-400 transition-colors"
+            <div className="relative z-10 flex flex-col md:flex-row gap-6">
+                {post.image && (
+                    <div className="w-full md:w-48 h-32 shrink-0 rounded-xl overflow-hidden border border-white/10">
+                        <img 
+                            src={post.image} 
+                            alt={post.title} 
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                        />
+                    </div>
+                )}
+                <div className="flex-grow">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
+                        <motion.h3 
+                            className="text-2xl font-bold text-gray-100 group-hover:text-blue-400 transition-colors"
+                            whileHover={{ x: 4 }}
+                        >
+                            <Link to={`/blog/${post.slug}`} className="block">
+                                {post.title}
+                            </Link>
+                        </motion.h3>
+                        <motion.span 
+                            className="flex items-center text-sm text-gray-500 whitespace-nowrap"
+                            whileHover={{ scale: 1.05 }}
+                        >
+                            <FaCalendarAlt className="mr-2 text-blue-400/60" />
+                            {new Date(post.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </motion.span>
+                    </div>
+
+                    <p className="text-gray-400 mb-6 leading-relaxed line-clamp-2">
+                        {post.excerpt}
+                    </p>
+
+                    <motion.div
                         whileHover={{ x: 4 }}
                     >
-                        <Link to={`/blog/${post.slug}`} className="block">
-                            {post.title}
-                        </Link>
-                    </motion.h3>
-                    <motion.span 
-                        className="flex items-center text-sm text-gray-500 whitespace-nowrap"
-                        whileHover={{ scale: 1.05 }}
-                    >
-                        <FaCalendarAlt className="mr-2 text-blue-400/60" />
-                        {new Date(post.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </motion.span>
-                </div>
-
-                <p className="text-gray-400 mb-6 leading-relaxed line-clamp-3">
-                    {post.excerpt}
-                </p>
-
-                <motion.div
-                    whileHover={{ x: 4 }}
-                >
-                    <Link
-                        to={`/blog/${post.slug}`}
-                        className="inline-flex items-center text-blue-400 font-medium hover:text-blue-300 transition group/link"
-                    >
-                        Read Article 
-                        <motion.span
-                            animate={{ x: [0, 4, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                            className="ml-2"
+                        <Link
+                            to={`/blog/${post.slug}`}
+                            className="inline-flex items-center text-blue-400 font-medium hover:text-blue-300 transition group/link"
                         >
-                            <FaArrowRight />
-                        </motion.span>
-                    </Link>
-                </motion.div>
+                            Read Article 
+                            <motion.span
+                                animate={{ x: [0, 4, 0] }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                                className="ml-2"
+                            >
+                                <FaArrowRight />
+                            </motion.span>
+                        </Link>
+                    </motion.div>
+                </div>
             </div>
 
             {/* Shine effect on hover */}

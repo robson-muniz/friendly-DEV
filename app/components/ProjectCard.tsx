@@ -26,7 +26,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
                 {/* Image Container */}
                 <div className="relative overflow-hidden aspect-video">
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent z-10"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-gray-900 via-transparent to-transparent z-10"></div>
                     <motion.img
                         src={project.image}
                         alt={project.title}

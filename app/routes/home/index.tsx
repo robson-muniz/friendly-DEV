@@ -1,5 +1,5 @@
 import type { Route } from "./+types/index";
-import type { PostMeta } from "~/types";
+import type { PostMeta, StrapiResponse, StrapiProject } from "~/types";
 import type { Project } from "~/types";
 import FeaturedProjects from "~/components/FeaturedProjects";
 import AboutPreview from "~/components/AboutPreview";
@@ -22,9 +22,30 @@ export function meta({ }: Route.MetaArgs) {
     ];
 }
 
-export async function loader({ request }: Route.LoaderArgs): Promise<{ projects: Project[] }> {
+export async function loader({ request }: Route.LoaderArgs): Promise<{ projects: Project[], posts: PostMeta[] }> {
     const apiUrl = import.meta.env.VITE_API_URL;
     const strapiUrl = import.meta.env.VITE_STRAPI_URL || "";
+    const res = await fetch(`${apiUrl}/posts?populate=image&sort=date:DESC`);
+
+    if (!res.ok) {
+        throw new Response("Failed to fetch posts", {
+            status: res.status,
+            statusText: "Failed to fetch posts"
+        });
+    }
+
+    const postJson: StrapiResponse<StrapiPost> = await res.json();
+    const posts = (postJson.data || []).map((post: any) => ({
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        excerpt: post.excerpt,
+        date: post.date,
+        body: post.body,
+        image: post.image?.url
+            ? `${strapiUrl}${post.image.url}`
+            : '/image/no-image.png',
+    }));
 
     const projectRes = await fetch(`${apiUrl}/projects?filters[featured][$eq]=true&populate=*`);
 
@@ -35,9 +56,9 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{ projects:
         });
     }
 
-    const projectsJson = await projectRes.json();
+    const json: StrapiResponse<StrapiProject[]> = await projectRes.json();
 
-    const projects = (projectsJson.data || []).map((project: any) => ({
+    const projects = (json.data || []).map((project: any) => ({
         id: project.id,
         documentID: project.documentId,
         title: project.title,
@@ -51,12 +72,11 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{ projects:
         date: project.date,
     }));
 
-    return { projects };
+    return { projects, posts };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-    const { projects } = loaderData;
-    const posts: PostMeta[] = []; // Temporary fallback for posts until Strapi posts are ready
+    const { projects, posts } = loaderData;
 
     const stats = [
         { value: "50+", label: "Projects Delivered", icon: <FaRocket /> },
@@ -66,7 +86,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     ];
 
     return (
-        <div className="bg-[#0a192f] text-[#e6f1ff]">
+        <div className="bg-navy-800 text-navy-50">
             {/* Hero Section */}
             <section className="min-h-screen relative overflow-hidden">
                 {/* Background Pattern */}

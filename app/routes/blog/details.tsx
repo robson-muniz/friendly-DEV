@@ -1,29 +1,46 @@
 import ReactMarkdown from 'react-markdown';
-import type {Route} from './+types/details'
-import type {PostMeta} from "~/types";
-import {Link} from "react-router";
+import type { Route } from './+types/details'
+import type { PostMeta, StrapiPost, StrapiResponse } from "~/types";
+import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaCalendarAlt, FaClock } from "react-icons/fa";
 
-export async function loader({request, params}: Route.LoaderArgs) {
-    const {slug} = params;
+export async function loader({ request, params }: Route.LoaderArgs) {
+    const { slug } = params;
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const strapiUrl = import.meta.env.VITE_STRAPI_URL || "";
 
-    const url = new URL(`/posts-meta.json`, request.url);
-    const res = await fetch(url.href);
+    const res = await fetch(`${apiUrl}/posts?filters[slug][$eq]=${slug}&populate=image`);
 
-    if (!res.ok) throw new Error('Failed to fetch posts metadata');
+    if (!res.ok) {
+        throw new Response("Failed to fetch post", {
+            status: res.status,
+            statusText: "Failed to fetch post"
+        });
+    }
 
-    const index = await res.json();
+    const json: StrapiResponse<StrapiPost> = await res.json();
+    const strapiPost = json.data?.[0];
 
-    const postMeta = index.find((post: PostMeta) => post.slug === slug);
-    if (!postMeta) throw new Response('Post not found', {status: 404});
+    if (!strapiPost) {
+        throw new Response('Post not found', { status: 404 });
+    }
 
-    //Dynamic import the raw markdown file
-    const markdown = await import(`../../posts/${slug}.md?raw`);
+    const postMeta: PostMeta = {
+        id: strapiPost.id,
+        slug: strapiPost.slug,
+        title: strapiPost.title,
+        excerpt: strapiPost.excerpt,
+        date: strapiPost.date,
+        body: strapiPost.body,
+        image: strapiPost.image?.url
+            ? `${strapiUrl}${strapiPost.image.url}`
+            : '/image/no-image.png',
+    };
 
     return {
         postMeta,
-        markdown: markdown.default
+        markdown: postMeta.body
     }
 }
 

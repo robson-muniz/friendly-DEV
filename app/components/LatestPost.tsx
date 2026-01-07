@@ -54,14 +54,19 @@ const LatestPost = ({ posts, limit = 3 }: LatestPostProps) => {
                             to={`/blog/${post.slug}`}
                             className="group block h-full"
                         >
-                            <article className="glass-card h-full rounded-2xl p-6 flex flex-col relative overflow-hidden">
-                                {/* Hover gradient */}
-                                <motion.div
-                                    className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                    initial={false}
-                                />
+                            <article className="glass-card h-full rounded-2xl flex flex-col relative overflow-hidden">
+                                {post.image && (
+                                    <div className="relative h-48 overflow-hidden">
+                                        <img 
+                                            src={post.image} 
+                                            alt={post.title} 
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60" />
+                                    </div>
+                                )}
                                 
-                                <div className="relative z-10">
+                                <div className="p-6 relative z-10">
                                     <motion.div
                                         className="mb-4"
                                         whileHover={{ scale: 1.1 }}

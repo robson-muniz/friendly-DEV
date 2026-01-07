@@ -1,5 +1,5 @@
 import type { Route } from "./+types/index";
-import type { PostMeta } from "~/types";
+import type { PostMeta, StrapiPost, StrapiResponse } from "~/types";
 import PostCard from "~/components/PostCard";
 import Pagination from "~/components/pagination";
 import { useState } from "react";
@@ -9,23 +9,38 @@ import { FaPenFancy } from "react-icons/fa";
 
 
 export async function loader({ request }: Route.LoaderArgs): Promise<{ posts: PostMeta[] }> {
-    const url = new URL('/posts-meta.json', request.url);
-    const res = await fetch(url.href);
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const strapiUrl = import.meta.env.VITE_STRAPI_URL || "";
+    const res = await fetch(`${apiUrl}/posts?populate=image&sort=date:DESC`);
 
-    if (!res.ok) throw new Error('Failed to fetch posts metadata');
+    if (!res.ok) {
+        throw new Response("Failed to fetch posts", {
+            status: res.status,
+            statusText: "Failed to fetch posts"
+        });
+    }
 
-    const data = await res.json()
+    const postJson: StrapiResponse<StrapiPost> = await res.json();
+    const posts = (postJson.data || []).map((post: any) => ({
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        excerpt: post.excerpt,
+        date: post.date,
+        body: post.body,
+        image: post.image?.url
+            ? `${strapiUrl}${post.image.url}`
+            : '/image/no-image.png',
+    }));
 
-    data.sort((a: PostMeta, b: PostMeta) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    return { posts: data }
+    return { posts };
 }
 
 const BlogPage = ({ loaderData }: Route.ComponentProps) => {
 
     const [searchQuery, setSearchQuery] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
-    const postsPerPage = 3;
+    const postsPerPage = 2;
     const filteredPosts = loaderData.posts.filter((post) => post.title.toLowerCase().includes(searchQuery.toLowerCase()))
 
     const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
