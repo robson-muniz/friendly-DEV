@@ -86,7 +86,7 @@ const FeaturedProjects = ({ projects, count = 4 }: FeaturedProjectsProps) => {
                     viewport={{ once: true, margin: "-100px" }}
                     className="grid gap-8 md:grid-cols-2"
                 >
-                    {projects.map((p, index) => (
+                    {projects.slice(0, count).map((p, index) => (
                         <motion.div
                             key={p.id}
                             variants={itemVariants}

@@ -26,7 +26,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{ projects:
     const apiUrl = import.meta.env.VITE_API_URL;
     const strapiUrl = import.meta.env.VITE_STRAPI_URL || "";
 
-    const projectRes = await fetch(`${apiUrl}/projects?populate=*`);
+    const projectRes = await fetch(`${apiUrl}/projects?filters[featured][$eq]=true&populate=*`);
 
     if (!projectRes.ok) {
         throw new Response("Failed to fetch projects", {
@@ -189,7 +189,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
                         <Link
                             to="/projects"
-                            className="group flex items-center gap-3 px-6 py-3 rounded-xl border border-[#233554] hover:border-[#64ffda]/50 text-[#e6f1ff] hover:text-[#64ffda] transition-all"
+                            className="group flex items-center gap-3 px-6 py-3 rounded-xl border border-navy-600 hover:border-navy-300/50 text-navy-50 hover:text-navy-300 transition-all"
                         >
                             View All Projects
                             <FaArrowDown className="transform rotate-90 group-hover:translate-x-1 transition-transform" />
@@ -214,9 +214,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                             </span>
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                            Latest <span className="text-[#9d4edd]">Articles</span>
+                            Latest <span className="text-navy-500">Articles</span>
                         </h2>
-                        <p className="text-lg text-[#ccd6f6] max-w-2xl mx-auto">
+                        <p className="text-lg text-navy-100 max-w-2xl mx-auto">
                             Sharing knowledge and insights about modern web development, best practices, and industry trends.
                         </p>
                     </div>
@@ -244,7 +244,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                             </p>
                             <Link
                                 to="/contact"
-                                className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-[#64ffda] to-[#00b4d8] text-[#0a192f] font-bold hover:shadow-2xl hover:shadow-[#64ffda]/25 transition-all"
+                                className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-linear-to-r from-[#64ffda] to-[#00b4d8] text-[#0a192f] font-bold hover:shadow-2xl hover:shadow-[#64ffda]/25 transition-all"
                             >
                                 Start a Project
                                 <FaRocket className="group-hover:translate-x-1 transition-transform" />
