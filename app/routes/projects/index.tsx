@@ -18,6 +18,7 @@ export async function loader(
     { }: Route.LoaderArgs
 ): Promise<{ projects: Project[] }> {
     const apiUrl = import.meta.env.VITE_API_URL;
+    const strapiUrl = import.meta.env.VITE_STRAPI_URL || "";
     if (!apiUrl) {
         throw new Response("VITE_API_URL is not defined in environment variables", {
             status: 500,
@@ -44,7 +45,7 @@ export async function loader(
         title: project.title,
         description: project.description,
         image: project.image?.url
-            ? `${import.meta.env.VITE_STRAPI_URL || ""}${project.image.url}`
+            ? project.image.url.startsWith('http') ? project.image.url : `${strapiUrl}${project.image.url}`
             : '/image/no-image.png',
         url: project.url,
         category: project.category,

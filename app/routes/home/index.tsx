@@ -43,7 +43,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{ projects:
         date: post.date,
         body: post.body,
         image: post.image?.url
-            ? `${strapiUrl}${post.image.url}`
+            ? post.image.url.startsWith('http') ? post.image.url : `${strapiUrl}${post.image.url}`
             : '/image/no-image.png',
     }));
 
@@ -64,7 +64,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{ projects:
         title: project.title,
         description: project.description,
         image: project.image?.url
-            ? `${strapiUrl}${project.image.url}`
+            ? project.image.url.startsWith('http') ? project.image.url : `${strapiUrl}${project.image.url}`
             : '/image/no-image.png',
         url: project.url,
         category: project.category,

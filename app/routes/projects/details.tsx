@@ -53,7 +53,7 @@ export async function loader({ params }: Route.LoaderArgs) {
             title: projectData.title,
             description: projectData.description,
             image: projectData.image?.url
-                ? `${strapiUrl}${projectData.image.url}`
+                ? projectData.image.url.startsWith('http') ? projectData.image.url : `${strapiUrl}${projectData.image.url}`
                 : '/image/no-image.png',
             url: projectData.url,
             category: projectData.category,

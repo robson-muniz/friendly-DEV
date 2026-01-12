@@ -34,7 +34,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         date: strapiPost.date,
         body: strapiPost.body,
         image: strapiPost.image?.url
-            ? `${strapiUrl}${strapiPost.image.url}`
+            ? strapiPost.image.url.startsWith('http') ? strapiPost.image.url : `${strapiUrl}${strapiPost.image.url}`
             : '/image/no-image.png',
     };
 

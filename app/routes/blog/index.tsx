@@ -29,7 +29,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<{ posts: Po
         date: post.date,
         body: post.body,
         image: post.image?.url
-            ? `${strapiUrl}${post.image.url}`
+            ? post.image.url.startsWith('http') ? post.image.url : `${strapiUrl}${post.image.url}`
             : '/image/no-image.png',
     }));
 
