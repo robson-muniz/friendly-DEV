@@ -6,6 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLocation,
+  useLoaderData,
 } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Route } from "./+types/root";
@@ -32,7 +33,19 @@ export function meta({ }: Route.MetaArgs) {
   ];
 }
 
+export async function loader() {
+  return {
+    ENV: {
+      VITE_EMAILJS_SERVICE_ID: process.env.VITE_EMAILJS_SERVICE_ID,
+      VITE_EMAILJS_TEMPLATE_ID: process.env.VITE_EMAILJS_TEMPLATE_ID,
+      VITE_EMAILJS_PUBLIC_KEY: process.env.VITE_EMAILJS_PUBLIC_KEY,
+    },
+  };
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -54,6 +67,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
         <ScrollRestoration />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(data?.ENV || {})}`,
+          }}
+        />
         <Scripts />
       </body>
     </html>

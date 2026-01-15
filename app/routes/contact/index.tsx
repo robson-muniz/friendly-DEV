@@ -1,7 +1,9 @@
 import type { Route } from "./+types"
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { FaPaperPlane, FaUser, FaEnvelope, FaTag, FaCommentAlt } from "react-icons/fa";
-import { useActionData, Form } from "react-router";
+import { useActionData, Form, useNavigation } from "react-router";
+import emailjs from "@emailjs/browser";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * ANIMATION VARIANTS
@@ -123,33 +125,70 @@ export async function action({ request }: Route.ActionArgs) {
         return { errors, success: false };
     }
 
-    try {
-        // Formspree integration example
-        const response = await fetch("https://formspree.io/f/xqeekgnk", {
-            method: "POST",
-            body: formData,
-            headers: { 'Accept': 'application/json' }
-        });
-
-        if (response.ok) {
-            return { 
-                message: "Thanks for reaching out! I'll get back to you shortly.", 
-                success: true 
-            };
-        }
-        
-        throw new Error("Form submission failed");
-    } catch (error) {
-        return { 
-            message: "Something went wrong. Please try again later.", 
-            success: false 
-        };
-    }
+    return { success: true };
 }
 
 export default function ContactPage() {
     const actionData = useActionData<ActionData>();
+    const navigation = useNavigation();
+    const formRef = useRef<HTMLFormElement>(null);
+    const [isSending, setIsSending] = useState(false);
+    const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+
     const errors = actionData?.errors || {};
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        // We let React Router handle the action first for validation
+    };
+
+    useEffect(() => {
+        if (actionData?.success && formRef.current) {
+            const sendEmail = async () => {
+                setIsSending(true);
+                try {
+                    // Check if environment variables are set
+                    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || (typeof window !== "undefined" && (window as any).ENV?.VITE_EMAILJS_SERVICE_ID);
+                    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || (typeof window !== "undefined" && (window as any).ENV?.VITE_EMAILJS_TEMPLATE_ID);
+                    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || (typeof window !== "undefined" && (window as any).ENV?.VITE_EMAILJS_PUBLIC_KEY);
+
+                    if (!serviceId || !templateId || !publicKey) {
+                        console.error("Missing EmailJS Config:", { 
+                            hasService: !!serviceId, 
+                            hasTemplate: !!templateId, 
+                            hasPublic: !!publicKey 
+                        });
+                        throw new Error("EmailJS configuration is missing");
+                    }
+
+                    await emailjs.sendForm(
+                        serviceId,
+                        templateId,
+                        formRef.current!,
+                        publicKey
+                    );
+                    setResult({
+                        success: true,
+                        message: "Thanks for reaching out! I'll get back to you shortly."
+                    });
+                    formRef.current?.reset();
+                } catch (error) {
+                    console.error("EmailJS Error:", error);
+                    setResult({
+                        success: false,
+                        message: error instanceof Error && error.message.includes("configuration") 
+                            ? "Email service is not configured correctly." 
+                            : "Failed to send email. Please try again later."
+                    });
+                } finally {
+                    setIsSending(false);
+                }
+            };
+            sendEmail();
+        }
+    }, [actionData]);
+
+    const showSuccess = result?.success || actionData?.success;
+    const message = result?.message || actionData?.message;
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 py-12">
@@ -188,22 +227,22 @@ export default function ContactPage() {
 
                     {/* Success Message */}
                     <AnimatePresence>
-                        {actionData?.success && (
+                        {showSuccess && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0, marginBottom: 0 }}
                                 animate={{ opacity: 1, height: "auto", marginBottom: 32 }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="bg-green-500/10 border border-green-500/30 text-green-400 p-6 rounded-xl text-center backdrop-blur-sm overflow-hidden"
+                                className={`${result?.success === false ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-green-500/10 border-green-500/30 text-green-400'} p-6 rounded-xl text-center backdrop-blur-sm overflow-hidden`}
                             >
-                                <div className="text-5xl mb-3">🎉</div>
-                                <h3 className="text-xl font-bold mb-2">Message Received!</h3>
-                                <p>{actionData.message}</p>
+                                <div className="text-5xl mb-3">{result?.success === false ? '❌' : '🎉'}</div>
+                                <h3 className="text-xl font-bold mb-2">{result?.success === false ? 'Error' : 'Message Received!'}</h3>
+                                <p>{message}</p>
                             </motion.div>
                         )}
                     </AnimatePresence>
 
                     {/* Contact Form */}
-                    <Form method="post" className="space-y-6 relative z-10">
+                    <Form method="post" ref={formRef} className="space-y-6 relative z-10">
                         <div className="grid md:grid-cols-2 gap-6">
                             <FormField
                                 label="Full Name"
@@ -245,7 +284,8 @@ export default function ContactPage() {
 
                         <motion.button
                             type="submit"
-                            className="group w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold text-lg shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden"
+                            disabled={isSending || navigation.state === "submitting"}
+                            className="group w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold text-lg shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-3 cursor-pointer relative overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed"
                             whileHover={{ scale: 1.02, y: -2 }}
                             whileTap={{ scale: 0.98 }}
                         >
@@ -256,8 +296,17 @@ export default function ContactPage() {
                                 animate={{ x: [0, 2, 0] }}
                                 transition={{ duration: 2, repeat: Infinity }}
                             >
-                                <FaPaperPlane className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                Send Message
+                                {isSending || navigation.state === "submitting" ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        Sending...
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaPaperPlane className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                        Send Message
+                                    </>
+                                )}
                             </motion.span>
                         </motion.button>
                     </Form>
